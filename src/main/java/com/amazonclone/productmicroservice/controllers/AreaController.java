@@ -64,16 +64,16 @@ public class AreaController {
 		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
 	}
 
-	@PutMapping("/area")
-	public ResponseEntity<DeletedOrUpdateResponse> updateCityUsingPincode(@RequestBody Area area) {
-		DeletedOrUpdateResponse response = new DeletedOrUpdateResponse(false,"No city exists with the specified pincode");
-		if(areaService.updateCityName(area)) {
-			response.setSuccessful(true);
-			response.setDescription(null);
-			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.OK);
-		}
-		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
-	}
+//	@PutMapping("/area")
+//	public ResponseEntity<DeletedOrUpdateResponse> updateCityUsingPincode(@RequestBody Area area) {
+//		DeletedOrUpdateResponse response = new DeletedOrUpdateResponse(false,"No city exists with the specified pincode");
+//		if(areaService.updateCityName(area)) {
+//			response.setSuccessful(true);
+//			response.setDescription(null);
+//			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.OK);
+//		}
+//		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
+//	}
 	
 	@PutMapping("/area/{oldCityName}/{newCityName}")
 	public ResponseEntity<DeletedOrUpdateResponse> updateAllCityName(@PathVariable(value="oldCityName") String oldCityName, @PathVariable(value="newCityName") String newCityName) {

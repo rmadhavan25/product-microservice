@@ -55,14 +55,14 @@ public class AreaService {
 
 	/*------------------------Update/PUT-----------------------------------*/
 	
-	//update cityName of given pin-code
-	public boolean updateCityName(Area area) {
-		if(areaRepo.findById(area.getPincode()).isPresent()) {
-			areaRepo.getReferenceById(area.getPincode()).setCity(area.getCity());
-			return true;
-		}
-		return false;
-	}
+//	//update cityName of given pin-code
+//	public boolean updateCityName(Area area) {
+//		if(areaRepo.findById(area.getPincode()).isPresent()) {
+//			areaRepo.getReferenceById(area.getPincode()).setCity(area.getCity());
+//			return true;
+//		}
+//		return false;
+//	}
 
 	//update matching city names with new ones
 	public boolean updateAllCityName(String oldCityName, String newCityName) {

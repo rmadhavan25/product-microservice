@@ -121,6 +121,22 @@ public class ProductControllerTest {
 		.andDo(print());
 	}
 	
+	//getting list of products given a search string
+	@Test
+	public void getProductsMatchingSearchString() throws Exception {
+		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
+		Product product1 = new Product(2, "iphone 12", "old apple mobile", "40000", 7, "smartphones", null);
+		
+		List<Product> products =  Arrays.asList(product,product1);
+		
+		when(productService.getProductByName("iphone")).thenReturn(products);
+		
+		mockMvc.perform(get("/products/byName/{productName}","iphone").contentType(MediaType.APPLICATION_JSON)
+				).andExpect(status().isOk())
+				.andExpect(jsonPath("$.size()").value(products.size()))
+				.andDo(print());
+	}
+	
 	//product not found exception for given id
 	
 	@Test

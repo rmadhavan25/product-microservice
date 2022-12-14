@@ -11,7 +11,6 @@ import javax.persistence.ManyToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,5 +33,10 @@ public class Area {
 		          },mappedBy = "shippableAreaPincodes")
 	@JsonIgnore
 	private Set<Product> products = new HashSet<Product>();
+	
+	public Area(int pincode,String city){
+		this.pincode = pincode;
+		this.city = city;
+	}
 	
 }
