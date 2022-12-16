@@ -39,12 +39,7 @@ public class ProductService {
 
 		product = getProduct(productId);
 
-		
-		product.getShippableAreaPincodes().forEach(a -> {if(a.getPincode()==area.getPincode()) {
-			this.isPresent = true;
-		}
-		});
-		if(isPresent) {
+		if(this.isShippableAreaAlreadyPresent(product, area)) {
 			this.isPresent = false;
 			throw new ShippableAreaAlreadyExistsException("The product is already being shipped to this location");
 		}
@@ -126,7 +121,13 @@ public class ProductService {
 		return productRepo.save(product);
 	}
 	
-	
+	/*-----------------UTILITY----------------*/
+	public boolean isShippableAreaAlreadyPresent(Product product,Area area) {
+		product.getShippableAreaPincodes().forEach(a -> {if(a.getPincode()==area.getPincode()) {
+			this.isPresent= true;
+		}});
+		return this.isPresent;
+	}
 
 
 

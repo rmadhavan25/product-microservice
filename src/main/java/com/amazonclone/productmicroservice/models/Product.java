@@ -51,7 +51,7 @@ public class Product {
 	private Set<Area> shippableAreaPincodes = new HashSet<Area>();
 	
 	public void addShippableAreaPincodes(Area area) {
-		System.out.println(this.name);
+//		System.out.println(this.name+"  "+area.getCity());
 		this.shippableAreaPincodes.add(area);
 		area.getProducts().add(this);
 	}
