@@ -116,8 +116,7 @@ public class ProductService {
 	//delete shippableAreas from product
 	public Product deleteProductShippabaleAreaByPincode(int productId, int pincode) {
 		Product product = getProduct(productId);
-		product.getShippableAreaPincodes().removeIf(x->x.getPincode()==pincode);
-		
+		removeShippableArea(product, pincode);
 		return productRepo.save(product);
 	}
 	
@@ -127,6 +126,10 @@ public class ProductService {
 			this.isPresent= true;
 		}});
 		return this.isPresent;
+	}
+	
+	public boolean removeShippableArea(Product product,int pincode) {
+		return product.getShippableAreaPincodes().removeIf(x->x.getPincode()==pincode);
 	}
 
 

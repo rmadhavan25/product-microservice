@@ -243,6 +243,48 @@ public class ProductServiceTest {
 		assertThat(result.getCategory()).isEqualTo("smartphones and iphones");
 	}
 	
+	/*---------------------------DELETE----------------------*/
+	
+	//delete product by id
+	@Test
+	public void deleteProductByIdTrue() {
+		//given
+		given(productRepo.findById(product.getId())).willReturn(Optional.of(product));
+		willDoNothing().given(productRepo).deleteById(product.getId());
+		
+		//when
+		boolean result = productService.deleteProductById(product.getId());
+		
+		//then
+		assertThat(result).isEqualTo(true);
+	}
+	
+	//throws product not found exception
+	@Test
+	public void throws_productNotFoundException_when_deleting() {
+		//given
+		given(productRepo.findById(product.getId())).willThrow(ProductNotFoundException.class);
+		//when
+		assertThrows(ProductNotFoundException.class, ()->{
+			productService.deleteProductById(product.getId());
+		});
+		//then
+		verify(productRepo,never()).deleteById(product.getId());
+	}
+	
+	//deleting shippable area from product
+	@Test
+	public void deleteShippableAreaFromProduct() {
+		//given
+		given(productRepo.findById(product1.getId())).willReturn(Optional.of(product1));
+		given(productRepo.save(product1)).willReturn(product1);
+		//when
+		Product resultProduct = productService.deleteProductShippabaleAreaByPincode(product1.getId(), 641038);
+		
+		//then
+		assertThat(resultProduct).isEqualTo(product1);
+	}
+//	
 	/*---------------------------UTILITY----------------------*/
 	
 	@Test
@@ -262,6 +304,31 @@ public class ProductServiceTest {
 		product.setShippableAreaPincodes(new HashSet<Area>());
 		//when
 		boolean result = productService.isShippableAreaAlreadyPresent(product, area1);
+		//then
+		assertThat(result).isEqualTo(false);
+	}
+	
+	@Test
+	public void removeShippableAreaFromProductTrue() {
+		//given
+		product1.setShippableAreaPincodes(shippableAreas);
+		
+		//when
+		boolean result = productService.removeShippableArea(product1, 641038);
+		
+		//then
+		assertThat(result).isEqualTo(true);
+	}
+	
+	@Test
+	public void removeShippableAreaFromProductFalse() {
+		//given
+		shippableAreas.remove(area1);
+		product1.setShippableAreaPincodes(shippableAreas);
+		
+		//when
+		boolean result = productService.removeShippableArea(product1, 641038);
+		
 		//then
 		assertThat(result).isEqualTo(false);
 	}
