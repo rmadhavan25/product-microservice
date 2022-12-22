@@ -14,7 +14,7 @@ import com.amazonclone.productmicroservice.models.Product;
 
 @Repository
 public interface ProductRepo extends JpaRepository<Product, Integer> {
-	public List<Product> findByCategory(String Category);
+	public List<Product> findByCategory(String category);
 	
 	
 	@Modifying

@@ -29,7 +29,7 @@ import com.amazonclone.productmicroservice.repos.ProductRepo;
 import com.amazonclone.productmicroservice.services.ProductService;
 
 @ExtendWith(MockitoExtension.class)
-public class ProductServiceTest {
+class ProductServiceTest {
 	
 	@Mock
 	private ProductRepo productRepo;
@@ -44,7 +44,7 @@ public class ProductServiceTest {
 	private Area area1,area2;
 	
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		area1 = new Area(641038,"Coimbatore");
 		area2 = new Area(625020,"Madurai");
 		shippableAreas = new HashSet<Area>();
@@ -57,7 +57,7 @@ public class ProductServiceTest {
 	
 	//posting new product
 	@Test
-	public void postProduct() {
+	void postProduct() {
 		//given
 		given(productRepo.save(product)).willReturn(product);
 		
@@ -70,7 +70,7 @@ public class ProductServiceTest {
 	
 	//posting new shippableArea to product
 	@Test
-	public void addShippableAreaToProductTrue() {
+	void addShippableAreaToProductTrue() {
 		//given
 		given(productRepo.save(product)).willReturn(product);
 		given(productRepo.findById(product.getId())).willReturn(Optional.of(product));
@@ -86,14 +86,15 @@ public class ProductServiceTest {
 	
 	//exception test
 	@Test
-	public void shippableAreaAlreadyExistsException() {
+	void shippableAreaAlreadyExistsException() {
 		//given
+		int productId = product.getId();
 		given(productRepo.findById(product.getId())).willReturn(Optional.of(product));
 		product.setShippableAreaPincodes(shippableAreas);
 		
 		//when
 		assertThrows(ShippableAreaAlreadyExistsException.class,()->{
-			productService.addShippableArea(area1, product.getId());
+			productService.addShippableArea(area1, productId);
 		});
 		//then
 		verify(productRepo,never()).save(any(Product.class));
@@ -104,7 +105,7 @@ public class ProductServiceTest {
 	
 	//get list of all products
 	@Test
-	public void getListOfProducts() {
+	void getListOfProducts() {
 		//given
 		given(productRepo.findAll()).willReturn(Arrays.asList(product1,product));
 		
@@ -117,7 +118,7 @@ public class ProductServiceTest {
 	
 	//get product by id
 	@Test
-	public void getProductByIdTrue(){
+	void getProductByIdTrue(){
 		//given
 		given(productRepo.findById(product.getId())).willReturn(Optional.of(product));
 		
@@ -130,19 +131,20 @@ public class ProductServiceTest {
 	
 	//exception: productNotFound
 	@Test
-	public void productNotFoundException() {
+	void productNotFoundException() {
 		//given
+		int productId = product.getId();
 		given(productRepo.findById(product.getId())).willReturn(Optional.empty());
 		
 		//when
-		assertThrows(ProductNotFoundException.class, ()->productService.getProduct(product.getId()));
+		assertThrows(ProductNotFoundException.class, ()->productService.getProduct(productId));
 		
 		//then
 	}
 	
 	//get products by category
 	@Test
-	public void getListOfProductsByCategory() {
+	void getListOfProductsByCategory() {
 		//given
 		given(productRepo.findByCategory(product.getCategory())).willReturn(Arrays.asList(product));
 		
@@ -155,7 +157,7 @@ public class ProductServiceTest {
 	
 	//get products by matching name
 	@Test
-	public void getProductsByName() {
+	void getProductsByName() {
 		//given
 		given(productRepo.findByNameContainingIgnoreCase("predator")).willReturn(Arrays.asList(product1));
 		
@@ -170,7 +172,7 @@ public class ProductServiceTest {
 	
 	//update name
 	@Test
-	public void updateName() {
+	void updateName() {
 		//given
 		given(productRepo.updateProductName(product.getId(), "iphone 12")).willReturn(1);
 		product.setName("iphone 12");
@@ -185,7 +187,7 @@ public class ProductServiceTest {
 	
 	//update description
 	@Test
-	public void updateDescription() {
+	void updateDescription() {
 		//given
 		given(productRepo.updateProductDescription(product.getId(), "iphone from apple giant")).willReturn(1);
 		product.setDescription("iphone from apple giant");
@@ -200,7 +202,7 @@ public class ProductServiceTest {
 	
 	//update price
 	@Test
-	public void updatePrice() {
+	void updatePrice() {
 		//given
 		given(productRepo.updateProductPrice(product.getId(), "90000")).willReturn(1);
 		product.setPrice("90000");
@@ -215,7 +217,7 @@ public class ProductServiceTest {
 	
 	//update quantity
 	@Test
-	public void updateQuantity() {
+	void updateQuantity() {
 		//given
 		given(productRepo.updateProductQuantity(product.getId(), 15)).willReturn(1);
 		product.setQuantity(15);
@@ -230,7 +232,7 @@ public class ProductServiceTest {
 	
 	//update category
 	@Test
-	public void updateCategory() {
+	void updateCategory() {
 		//given
 		given(productRepo.updateProductCategory(product.getId(), "smartphones and iphones")).willReturn(1);
 		product.setCategory("smartphones and iphones");
@@ -247,7 +249,7 @@ public class ProductServiceTest {
 	
 	//delete product by id
 	@Test
-	public void deleteProductByIdTrue() {
+	void deleteProductByIdTrue() {
 		//given
 		given(productRepo.findById(product.getId())).willReturn(Optional.of(product));
 		willDoNothing().given(productRepo).deleteById(product.getId());
@@ -256,17 +258,18 @@ public class ProductServiceTest {
 		boolean result = productService.deleteProductById(product.getId());
 		
 		//then
-		assertThat(result).isEqualTo(true);
+		assertThat(result).isTrue();
 	}
 	
 	//throws product not found exception
 	@Test
-	public void throws_productNotFoundException_when_deleting() {
+	void throws_productNotFoundException_when_deleting() {
 		//given
-		given(productRepo.findById(product.getId())).willThrow(ProductNotFoundException.class);
+		int productId = product.getId();
+		given(productRepo.findById(product.getId())).willReturn(Optional.empty());
 		//when
 		assertThrows(ProductNotFoundException.class, ()->{
-			productService.deleteProductById(product.getId());
+			productService.deleteProductById(productId);
 		});
 		//then
 		verify(productRepo,never()).deleteById(product.getId());
@@ -274,7 +277,7 @@ public class ProductServiceTest {
 	
 	//deleting shippable area from product
 	@Test
-	public void deleteShippableAreaFromProduct() {
+	void deleteShippableAreaFromProduct() {
 		//given
 		given(productRepo.findById(product1.getId())).willReturn(Optional.of(product1));
 		given(productRepo.save(product1)).willReturn(product1);
@@ -284,32 +287,32 @@ public class ProductServiceTest {
 		//then
 		assertThat(resultProduct).isEqualTo(product1);
 	}
-//	
+
 	/*---------------------------UTILITY----------------------*/
 	
 	@Test
-	public void testIsShippableAreaPresentMethodTrue() {
+	void testIsShippableAreaPresentMethodTrue() {
 		//given
 		product.setShippableAreaPincodes(new HashSet<Area>());
 		product.addShippableAreaPincodes(area1);
 		//when
 		boolean result = productService.isShippableAreaAlreadyPresent(product, area1);
 		//then
-		assertThat(result).isEqualTo(true);
+		assertThat(result).isTrue();
 	}
 	
 	@Test
-	public void testIsShippableAreaPresentMethodFalse() {
+	void testIsShippableAreaPresentMethodFalse() {
 		//given
 		product.setShippableAreaPincodes(new HashSet<Area>());
 		//when
 		boolean result = productService.isShippableAreaAlreadyPresent(product, area1);
 		//then
-		assertThat(result).isEqualTo(false);
+		assertThat(result).isFalse();
 	}
 	
 	@Test
-	public void removeShippableAreaFromProductTrue() {
+	void removeShippableAreaFromProductTrue() {
 		//given
 		product1.setShippableAreaPincodes(shippableAreas);
 		
@@ -317,11 +320,11 @@ public class ProductServiceTest {
 		boolean result = productService.removeShippableArea(product1, 641038);
 		
 		//then
-		assertThat(result).isEqualTo(true);
+		assertThat(result).isTrue();
 	}
 	
 	@Test
-	public void removeShippableAreaFromProductFalse() {
+	void removeShippableAreaFromProductFalse() {
 		//given
 		shippableAreas.remove(area1);
 		product1.setShippableAreaPincodes(shippableAreas);
@@ -330,6 +333,6 @@ public class ProductServiceTest {
 		boolean result = productService.removeShippableArea(product1, 641038);
 		
 		//then
-		assertThat(result).isEqualTo(false);
+		assertThat(result).isFalse();
 	}
 }

@@ -48,15 +48,12 @@ public class Product {
 	@JoinTable(name="product_available_area",
 				joinColumns = @JoinColumn(name = "product_id"),
 				inverseJoinColumns = @JoinColumn(name = "pincode"))
-	private Set<Area> shippableAreaPincodes = new HashSet<Area>();
+	private Set<Area> shippableAreaPincodes = new HashSet<>();
 	
 	public void addShippableAreaPincodes(Area area) {
-//		System.out.println(this.name+"  "+area.getCity());
 		this.shippableAreaPincodes.add(area);
 		area.getProducts().add(this);
 	}
 	
-//	@ManyToMany(mappedBy = "products")
-//	private List<Seller> sellers;
 
 }

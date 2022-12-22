@@ -48,9 +48,9 @@ public class AreaController {
 		if(areaService.deleteAreaByPincode(pincode)) {
 			response.setSuccessful(true);
 			response.setDescription(null);
-			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.OK);
+			return new ResponseEntity<>(response,HttpStatus.OK);
 		}
-		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
 	}
 	
 	@DeleteMapping("/area/city/{city}")
@@ -59,21 +59,11 @@ public class AreaController {
 		if(areaService.deleteAreaByCity(city)) {
 			response.setSuccessful(true);
 			response.setDescription(null);
-			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.OK);
+			return new ResponseEntity<>(response,HttpStatus.OK);
 		}
-		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
 	}
 
-//	@PutMapping("/area")
-//	public ResponseEntity<DeletedOrUpdateResponse> updateCityUsingPincode(@RequestBody Area area) {
-//		DeletedOrUpdateResponse response = new DeletedOrUpdateResponse(false,"No city exists with the specified pincode");
-//		if(areaService.updateCityName(area)) {
-//			response.setSuccessful(true);
-//			response.setDescription(null);
-//			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.OK);
-//		}
-//		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
-//	}
 	
 	@PutMapping("/area/{oldCityName}/{newCityName}")
 	public ResponseEntity<DeletedOrUpdateResponse> updateAllCityName(@PathVariable(value="oldCityName") String oldCityName, @PathVariable(value="newCityName") String newCityName) {
@@ -81,9 +71,9 @@ public class AreaController {
 		if(areaService.updateAllCityName(oldCityName,newCityName)) {
 			response.setSuccessful(true);
 			response.setDescription(null);
-			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.OK);
+			return new ResponseEntity<>(response,HttpStatus.OK);
 		}
-		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
 	}
 	
 }

@@ -108,7 +108,8 @@ public class ProductService {
 	
 	//delete product(using id)
 	public boolean deleteProductById(int productId) {
-		productRepo.findById(productId).orElseThrow(()->new ProductNotFoundException("No product Exists for the id: "+productId));
+		if(!productRepo.findById(productId).isPresent())
+			throw new ProductNotFoundException("No product Exists for the id: "+productId);
 		productRepo.deleteById(productId);
 		return true;
 	}

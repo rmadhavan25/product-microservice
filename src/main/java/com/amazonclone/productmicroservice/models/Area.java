@@ -32,7 +32,7 @@ public class Area {
 		              CascadeType.MERGE
 		          },mappedBy = "shippableAreaPincodes")
 	@JsonIgnore
-	private Set<Product> products = new HashSet<Product>();
+	private Set<Product> products = new HashSet<>();
 	
 	public Area(int pincode,String city){
 		this.pincode = pincode;

@@ -33,7 +33,6 @@ public class ProductController {
 	@PostMapping("/product/{productId}/area")
 	public Product addNewShippableAddressToProduct(@PathVariable(value="productId") int productId, @RequestBody Area area) {
 		return productService.addShippableArea(area,productId);
-		//return null;
 	}
 
 	@GetMapping("/products")
@@ -88,9 +87,9 @@ public class ProductController {
 		if(productService.deleteProductById(productId)) {
 			response.setSuccessful(true);
 			response.setDescription("successfully deleted the product");
-			return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(response,HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<DeletedOrUpdateResponse>(response,HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
 	}
 
 }

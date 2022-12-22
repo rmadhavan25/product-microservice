@@ -14,14 +14,14 @@ import com.amazonclone.productmicroservice.models.ErrorMessage;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ShippableAreaAlreadyExistsException.class)
-	public ResponseEntity<ErrorMessage> ShippableAreaAlreadyExistsException(ShippableAreaAlreadyExistsException saaee,WebRequest request){
+	public ResponseEntity<ErrorMessage> shippableAreaAlreadyExistsException(ShippableAreaAlreadyExistsException saaee,WebRequest request){
 		ErrorMessage errorMessage = new ErrorMessage(403,new Date(),saaee.getMessage(),"");
-		return new ResponseEntity<ErrorMessage>(errorMessage,HttpStatus.FORBIDDEN);
+		return new ResponseEntity<>(errorMessage,HttpStatus.FORBIDDEN);
 	}
 	
 	@ExceptionHandler(ProductNotFoundException.class)
-	public ResponseEntity<ErrorMessage> ProductNotFoundException(ProductNotFoundException pnfe,WebRequest request){
+	public ResponseEntity<ErrorMessage> productNotFoundException(ProductNotFoundException pnfe,WebRequest request){
 		ErrorMessage errorMessage = new ErrorMessage(404,new Date(),pnfe.getMessage(),"");
-		return new ResponseEntity<ErrorMessage>(errorMessage,HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(errorMessage,HttpStatus.NOT_FOUND);
 	}
 }

@@ -27,7 +27,7 @@ import com.amazonclone.productmicroservice.services.AreaService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(AreaController.class)
-public class AreaControllerTest {
+class AreaControllerTest {
 
 	@MockBean
 	private AreaService areaService;
@@ -43,7 +43,7 @@ public class AreaControllerTest {
 	
 	//post area
 	@Test
-	public void postNewArea() throws Exception {
+	void postNewArea() throws Exception {
 		//GIVEN
 		Area area = new Area(625020,"Madurai");
 		
@@ -60,7 +60,7 @@ public class AreaControllerTest {
 	
 	//get areas by city
 	@Test
-	public void getAreasGivenACityName() throws Exception {
+	void getAreasGivenACityName() throws Exception {
 		//GIVEN
 		String cityName = "Coimbatore";
 		Area area1 = new Area(641038,"Coimbatore");
@@ -79,7 +79,7 @@ public class AreaControllerTest {
 	
 	//getting all areas
 	@Test
-	public void getAllAreas() throws Exception {
+	void getAllAreas() throws Exception {
 		//GIVEN
 		Area area1 = new Area(641038,"Coimbatore");
 		Area area2 = new Area(641039,"Coimbatore");
@@ -98,7 +98,7 @@ public class AreaControllerTest {
 	
 	//delete areas by pincode
 	@Test
-	public void deleteAreaGivenAPincodeTrue()throws Exception{
+	void deleteAreaGivenAPincodeTrue()throws Exception{
 		//GIVEN
 		int pincode = 641038;
 		//Area area = new Area(641038,"Coimbatore");
@@ -114,7 +114,7 @@ public class AreaControllerTest {
 				.andDo(print());
 	}
 	@Test
-	public void deleteAreaGivenAPincodeFalse()throws Exception{
+	void deleteAreaGivenAPincodeFalse()throws Exception{
 		//GIVEN
 		int incorrectPincode = 641038;
 		//Area area = new Area(641038,"Coimbatore");
@@ -133,7 +133,7 @@ public class AreaControllerTest {
 	
 	//delete areas by city
 	@Test
-	public void deleteAreaGivenACityNameTrue()throws Exception{
+	void deleteAreaGivenACityNameTrue()throws Exception{
 		//GIVEN
 		String cityName = "Coimbatore";
 		//Area area = new Area(641038,"Coimbatore");
@@ -149,7 +149,7 @@ public class AreaControllerTest {
 				.andDo(print());
 	}
 	@Test
-	public void deleteAreaGivenACityNameFale()throws Exception{
+	void deleteAreaGivenACityNameFale()throws Exception{
 		//GIVEN
 		String incorrectCityName = "Coimbatore";
 		//Area area = new Area(641038,"Coimbatore");
@@ -168,7 +168,7 @@ public class AreaControllerTest {
 	
 	//update area
 	@Test
-	public void updateAreasWithANewCityNameTrue()throws Exception{
+	void updateAreasWithANewCityNameTrue()throws Exception{
 		//GIVEN
 		String newCityName = "Kovai";
 		String oldCityName = "Coimbatore";
@@ -184,7 +184,7 @@ public class AreaControllerTest {
 	}
 	
 	@Test
-	public void updateAreasWithANewCityNameFalse()throws Exception{
+	void updateAreasWithANewCityNameFalse()throws Exception{
 		//GIVEN
 		String newCityName = "Kovai";
 		String inCorrectOldCityName = "Coimbatore";

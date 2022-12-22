@@ -33,7 +33,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ProductController.class)
-public class ProductControllerTest {
+class ProductControllerTest {
 	
 	@MockBean
 	private ProductService productService;
@@ -59,7 +59,7 @@ public class ProductControllerTest {
 	
 	//post shippable areas to products
 	@Test
-	public void addNewShippableAddressToProduct() throws Exception {
+	void addNewShippableAddressToProduct() throws Exception {
 		//GIVEN
 		Area area = new Area(641038,"Coimbatore");
 		int productId = 1;
@@ -89,7 +89,7 @@ public class ProductControllerTest {
 	
 	//getting product by id
 	@Test
-	public void getProductById() throws Exception {
+	void getProductById() throws Exception {
 		int productId = 1;
 		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
 		
@@ -109,7 +109,7 @@ public class ProductControllerTest {
 	
 	//get list of all products
 	@Test
-	public void getListOfAllProducts() throws Exception {
+	void getListOfAllProducts() throws Exception {
 		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
 		Product product1 = new Product(2, "iphone 12", "old apple mobile", "40000", 7, "smartphones", null);
 		
@@ -125,7 +125,7 @@ public class ProductControllerTest {
 	
 	//getting list of products given a search string
 	@Test
-	public void getProductsMatchingSearchString() throws Exception {
+	void getProductsMatchingSearchString() throws Exception {
 		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
 		Product product1 = new Product(2, "iphone 12", "old apple mobile", "40000", 7, "smartphones", null);
 		
@@ -251,11 +251,10 @@ public class ProductControllerTest {
 	
 	//delete shippable area from product
 	@Test
-	public void deleteShippableAreaFromProduct()throws Exception{
+	void deleteShippableAreaFromProduct()throws Exception{
 		//GIVEN
 		int productId = 1;
 		int pincode = 641038;
-//		Area area = new Area(641038,"Coimbatore");
 		Set<Area> shippableAreaPincodes = new HashSet<Area>();
 		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", shippableAreaPincodes);
 		
@@ -278,7 +277,7 @@ public class ProductControllerTest {
 	
 	//deleting product
 	@Test
-	public void shouldDeleteProductByIdTrue() throws Exception {
+	void shouldDeleteProductByIdTrue() throws Exception {
 		int productId = 1;
 		when(productService.deleteProductById(productId)).thenReturn(true);
 		mockMvc.perform(delete("/product/{productId}",productId))
@@ -289,7 +288,7 @@ public class ProductControllerTest {
 	}
 	
 	@Test
-	public void shouldDeleteProductByIdFalse() throws Exception {
+	void shouldDeleteProductByIdFalse() throws Exception {
 		int incorrectProductId = 1;
 		when(productService.deleteProductById(incorrectProductId)).thenReturn(false);
 		mockMvc.perform(delete("/product/{productId}",incorrectProductId))
@@ -304,7 +303,7 @@ public class ProductControllerTest {
 	
 	//product not found exception for given id
 	@Test
-	public void throwProductNotFoundException() throws Exception {
+	void throwProductNotFoundException() throws Exception {
 		int productId = 1;
 		
 		
@@ -319,7 +318,7 @@ public class ProductControllerTest {
 	
 	//shippable area already exists exception
 	@Test
-	public void throwShippableAreaAlreadyExistsException() throws Exception {
+	void throwShippableAreaAlreadyExistsException() throws Exception {
 		int productId = 1;
 		
 		Area area = new Area();

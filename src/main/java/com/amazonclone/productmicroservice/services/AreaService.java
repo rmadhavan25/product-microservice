@@ -2,6 +2,7 @@ package com.amazonclone.productmicroservice.services;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,15 +23,14 @@ public class AreaService {
 	//delete area by pin-code
 	public boolean deleteAreaByPincode(int pincode) {
 		
+		Optional<Area> areas = areaRepo.findById(pincode);
 		Area area;
 		
-		if(areaRepo.findById(pincode).isPresent()) {
-			area = areaRepo.findById(pincode).get();
+		if(areas.isPresent()) {
+			area = areas.get();
 			area.getProducts().forEach(product->product.getShippableAreaPincodes().removeIf(shippableArea->shippableArea.getPincode()==pincode));
-			
-			if(areaRepo.deleteByPincode(pincode)==1) {
-				return true;
-			}
+			areaRepo.deleteByPincode(pincode);
+			return true;
 		}
 		
 		return false;
@@ -44,9 +44,8 @@ public class AreaService {
 		if(!areaRepo.findByCity(city).isEmpty()) {
 			List<Area> areas = areaRepo.findByCity(city);
 			areas.forEach(area->area.getProducts().forEach(product->product.getShippableAreaPincodes().removeIf(shipppableArea->shipppableArea.getCity().equals(city))));
-			if(areaRepo.deleteByCity(city)>0) {
-				return true;
-			}
+			areaRepo.deleteByCity(city);
+			return true;
 		}
 		
 
@@ -55,14 +54,6 @@ public class AreaService {
 
 	/*------------------------Update/PUT-----------------------------------*/
 	
-//	//update cityName of given pin-code
-//	public boolean updateCityName(Area area) {
-//		if(areaRepo.findById(area.getPincode()).isPresent()) {
-//			areaRepo.getReferenceById(area.getPincode()).setCity(area.getCity());
-//			return true;
-//		}
-//		return false;
-//	}
 
 	//update matching city names with new ones
 	public boolean updateAllCityName(String oldCityName, String newCityName) {
