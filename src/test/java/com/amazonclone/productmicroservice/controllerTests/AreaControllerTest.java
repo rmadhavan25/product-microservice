@@ -22,8 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.amazonclone.productmicroservice.controllers.AreaController;
 import com.amazonclone.productmicroservice.models.Area;
+import com.amazonclone.productmicroservice.models.dto.AreaDto;
 import com.amazonclone.productmicroservice.repos.AreaRepo;
 import com.amazonclone.productmicroservice.services.AreaService;
+import com.amazonclone.productmicroservice.services.DTOMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(AreaController.class)
@@ -31,6 +33,9 @@ class AreaControllerTest {
 
 	@MockBean
 	private AreaService areaService;
+	
+	@MockBean
+	private DTOMapper dtoMapper;
 	
 	@MockBean
 	private AreaRepo areaRepo;
@@ -45,16 +50,18 @@ class AreaControllerTest {
 	@Test
 	void postNewArea() throws Exception {
 		//GIVEN
+		AreaDto areaDto = new AreaDto(625020,"Madurai");
 		Area area = new Area(625020,"Madurai");
 		
 		//WHEN
+		when(dtoMapper.getAreaEntity(areaDto)).thenReturn(area);
 		when(areaRepo.save(any(Area.class))).thenReturn(area);
 		
 		//EXPECTED
-		mockMvc.perform(post("/area").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(area)))
+		mockMvc.perform(post("/area").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(areaDto)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.pincode").value(area.getPincode()))
-				.andExpect(jsonPath("$.city").value(area.getCity()))
+				.andExpect(jsonPath("$.pincode").value(areaDto.getPincode()))
+				.andExpect(jsonPath("$.city").value(areaDto.getCity()))
 				.andDo(print());
 	}
 	

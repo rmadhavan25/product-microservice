@@ -32,18 +32,16 @@ class AreaServiceTest {
 	@InjectMocks
 	private AreaService areaService;
 	
-	private Area area1,area2,area3,area4;
+	private Area area1,area2,area4;
 	
-	private List<Area> areas,areasWithSameCityName;
+	private List<Area> areasWithSameCityName;
 	
 	@BeforeEach
 	void setup() {
 		area1 = new Area(641038, "coimbatore");
 		area2 = new Area(625020,"madurai");
-		area3 = new Area(600028, "chennai");
 		area4 = new Area(641039, "coimbatore");
 		
-		areas = Arrays.asList(area1,area2,area3);
 		areasWithSameCityName = Arrays.asList(area1,area4);
 	}
 	

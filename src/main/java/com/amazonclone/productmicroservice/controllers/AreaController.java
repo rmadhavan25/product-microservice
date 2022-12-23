@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amazonclone.productmicroservice.models.Area;
 import com.amazonclone.productmicroservice.models.DeletedOrUpdateResponse;
+import com.amazonclone.productmicroservice.models.dto.AreaDto;
 import com.amazonclone.productmicroservice.repos.AreaRepo;
 import com.amazonclone.productmicroservice.services.AreaService;
+import com.amazonclone.productmicroservice.services.DTOMapper;
+
 
 @RestController
 public class AreaController {
@@ -26,10 +29,14 @@ public class AreaController {
 	@Autowired
 	AreaService areaService;
 	
+	@Autowired
+	DTOMapper dtoMapper;
 
 	@PostMapping("/area")
-	public Area addArea(@RequestBody Area area) {
-		return areaRepo.save(area);
+	public AreaDto addArea(@RequestBody AreaDto areaDto) {
+		Area area = dtoMapper.getAreaEntity(areaDto);
+		areaRepo.save(area);
+		return areaDto;
 	}
 	
 	@GetMapping("/area")
