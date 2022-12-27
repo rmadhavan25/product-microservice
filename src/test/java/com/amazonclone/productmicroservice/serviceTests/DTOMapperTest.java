@@ -43,7 +43,7 @@ class DTOMapperTest {
 		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", new HashSet<>());
 		
 		//when
-		Product mappedProduct = dtoMapper.getProductDto(productDto);
+		Product mappedProduct = dtoMapper.getProductEntity(productDto);
 		
 		//then
 		assertThat(mappedProduct.getId()).isEqualTo(product.getId());

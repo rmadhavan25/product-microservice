@@ -16,7 +16,8 @@ public class DTOMapper {
 	}
 	
 	//product entity
-	public Product getProductDto(ProductDto productDto) {
+	public Product getProductEntity(ProductDto productDto) {
 		return new Product(productDto.getId(), productDto.getName(), productDto.getDescription(), productDto.getPrice(), productDto.getQuantity(), productDto.getCategory(), productDto.getShippableAreaPincodes());
 	}
+
 }

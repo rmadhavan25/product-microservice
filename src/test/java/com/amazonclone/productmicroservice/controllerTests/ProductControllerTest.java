@@ -1,7 +1,6 @@
 package com.amazonclone.productmicroservice.controllerTests;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,11 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.amazonclone.productmicroservice.controllers.ProductController;
@@ -28,15 +30,22 @@ import com.amazonclone.productmicroservice.exceptions.ProductNotFoundException;
 import com.amazonclone.productmicroservice.exceptions.ShippableAreaAlreadyExistsException;
 import com.amazonclone.productmicroservice.models.Area;
 import com.amazonclone.productmicroservice.models.Product;
+import com.amazonclone.productmicroservice.models.dto.AreaDto;
+import com.amazonclone.productmicroservice.models.dto.ProductDto;
+import com.amazonclone.productmicroservice.services.DTOMapper;
 import com.amazonclone.productmicroservice.services.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ProductController.class)
+@RunWith(SpringRunner.class)
 class ProductControllerTest {
 	
 	@MockBean
 	private ProductService productService;
+	
+	@MockBean
+	private DTOMapper dtoMapper;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -44,15 +53,23 @@ class ProductControllerTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 	
+	private ProductDto productDto;
+	
+	
+	@BeforeEach
+	void setup() {
+		productDto = new ProductDto(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
+	}
+	
 	/*---------------------------POST---------------------------------------*/
 	
 	//add new product
 	@Test
 	void shouldCreateAProduct() throws JsonProcessingException, Exception {
-		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
+		//Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
 		
 		mockMvc.perform(post("/product").contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(product)))
+				.content(objectMapper.writeValueAsString(productDto)))
 				.andExpect(status().isOk())
 				.andDo(print());
 	}
@@ -62,17 +79,19 @@ class ProductControllerTest {
 	void addNewShippableAddressToProduct() throws Exception {
 		//GIVEN
 		Area area = new Area(641038,"Coimbatore");
+		AreaDto areaDto = new AreaDto(641038,"Coimbatore");
 		int productId = 1;
 		Set<Area> shippableAreaPincodes = new HashSet<Area>();
 		shippableAreaPincodes.add(area);
 		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", shippableAreaPincodes);
 		
 		//WHEN
-		when(productService.addShippableArea(any(Area.class), eq(productId))).thenReturn(product);
+		when(dtoMapper.getAreaEntity(areaDto)).thenReturn(area);
+		when(productService.addShippableArea(area, productId)).thenReturn(product);
 		
 		//EXPECTED
 		mockMvc.perform(post("/product/{productId}/area",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(area)))
+				.content(objectMapper.writeValueAsString(areaDto)))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.id").value(product.getId()))
 				.andExpect(jsonPath("$.name").value(product.getName()))
@@ -145,105 +164,115 @@ class ProductControllerTest {
 	//updating product name
 	@Test
 	void shouldUpdateProductName() throws Exception {
-		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
-		Product updatedProduct = new Product(1, "iphone 14", "apple mobile", "70000", 6, "smartphones", null);
+		Product product = new Product(1, "iphone 14", "apple mobile", "70000", 6, "smartphones", null);
+		productDto = new ProductDto(1, "iphone 14", "apple mobile", "70000", 6, "smartphones", null);
 		
-		when(productService.updateName(product.getId(),updatedProduct.getName())).thenReturn(updatedProduct);
+		when(dtoMapper.getProductEntity(productDto)).thenReturn(product);
+		
+		when(productService.updateName(product.getId(),product.getName())).thenReturn(product);
 		int productId = product.getId();
 		
 		mockMvc.perform(put("/product/{productId}/name",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updatedProduct))).andExpect(status().isOk())
-		.andExpect(jsonPath("$.id").value(updatedProduct.getId()))
-		.andExpect(jsonPath("$.name").value(updatedProduct.getName()))
-		.andExpect(jsonPath("$.price").value(updatedProduct.getPrice()))
-		.andExpect(jsonPath("$.description").value(updatedProduct.getDescription()))
-		.andExpect(jsonPath("$.category").value(updatedProduct.getCategory()))
-		.andExpect(jsonPath("$.quantity").value(updatedProduct.getQuantity()))
-		.andExpect(jsonPath("$.shippableAreaPincodes").value(updatedProduct.getShippableAreaPincodes()))
+				.content(objectMapper.writeValueAsString(productDto))).andExpect(status().isOk())
+		.andExpect(jsonPath("$.id").value(product.getId()))
+		.andExpect(jsonPath("$.name").value(product.getName()))
+		.andExpect(jsonPath("$.price").value(product.getPrice()))
+		.andExpect(jsonPath("$.description").value(product.getDescription()))
+		.andExpect(jsonPath("$.category").value(product.getCategory()))
+		.andExpect(jsonPath("$.quantity").value(product.getQuantity()))
+		.andExpect(jsonPath("$.shippableAreaPincodes").value(product.getShippableAreaPincodes()))
 		.andDo(print());
 	}
 	
 	//updating product description
 	@Test
 	void shouldUpdateProductDescription() throws Exception {
-		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
-		Product updatedProduct = new Product(1, "iphone", "apple made mobile", "70000", 6, "smartphones", null);
+		Product product = new Product(1, "iphone", "apple made mobile", "70000", 6, "smartphones", null);
+		productDto = new ProductDto(1, "iphone", "apple made mobile", "70000", 6, "smartphones", null);
 		
-		when(productService.updateDescription(product.getId(),updatedProduct.getDescription())).thenReturn(updatedProduct);
+		when(dtoMapper.getProductEntity(productDto)).thenReturn(product);
+		
+		when(productService.updateDescription(product.getId(),product.getDescription())).thenReturn(product);
 		int productId = product.getId();
 		
 		mockMvc.perform(put("/product/{productId}/description",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updatedProduct))).andExpect(status().isOk())
-		.andExpect(jsonPath("$.id").value(updatedProduct.getId()))
-		.andExpect(jsonPath("$.name").value(updatedProduct.getName()))
-		.andExpect(jsonPath("$.price").value(updatedProduct.getPrice()))
-		.andExpect(jsonPath("$.description").value(updatedProduct.getDescription()))
-		.andExpect(jsonPath("$.category").value(updatedProduct.getCategory()))
-		.andExpect(jsonPath("$.quantity").value(updatedProduct.getQuantity()))
-		.andExpect(jsonPath("$.shippableAreaPincodes").value(updatedProduct.getShippableAreaPincodes()))
+				.content(objectMapper.writeValueAsString(productDto))).andExpect(status().isOk())
+		.andExpect(jsonPath("$.id").value(product.getId()))
+		.andExpect(jsonPath("$.name").value(product.getName()))
+		.andExpect(jsonPath("$.price").value(product.getPrice()))
+		.andExpect(jsonPath("$.description").value(product.getDescription()))
+		.andExpect(jsonPath("$.category").value(product.getCategory()))
+		.andExpect(jsonPath("$.quantity").value(product.getQuantity()))
+		.andExpect(jsonPath("$.shippableAreaPincodes").value(product.getShippableAreaPincodes()))
 		.andDo(print());
 	}
 	
 	//updating product price
 	@Test
 	void shouldUpdateProductPrice() throws Exception {
-		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
-		Product updatedProduct = new Product(1, "iphone", "apple mobile", "75000", 6, "smartphones", null);
+		Product product = new Product(1, "iphone", "apple mobile", "75000", 6, "smartphones", null);
+		productDto = new ProductDto(1, "iphone", "apple mobile", "75000", 6, "smartphones", null);
 		
-		when(productService.updatePrice(product.getId(),updatedProduct.getPrice())).thenReturn(updatedProduct);
+		when(dtoMapper.getProductEntity(productDto)).thenReturn(product);
+		
+		when(productService.updatePrice(product.getId(),product.getPrice())).thenReturn(product);
 		int productId = product.getId();
 		
 		mockMvc.perform(put("/product/{productId}/price",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updatedProduct))).andExpect(status().isOk())
-		.andExpect(jsonPath("$.id").value(updatedProduct.getId()))
-		.andExpect(jsonPath("$.name").value(updatedProduct.getName()))
-		.andExpect(jsonPath("$.price").value(updatedProduct.getPrice()))
-		.andExpect(jsonPath("$.description").value(updatedProduct.getDescription()))
-		.andExpect(jsonPath("$.category").value(updatedProduct.getCategory()))
-		.andExpect(jsonPath("$.quantity").value(updatedProduct.getQuantity()))
-		.andExpect(jsonPath("$.shippableAreaPincodes").value(updatedProduct.getShippableAreaPincodes()))
+				.content(objectMapper.writeValueAsString(productDto))).andExpect(status().isOk())
+		.andExpect(jsonPath("$.id").value(product.getId()))
+		.andExpect(jsonPath("$.name").value(product.getName()))
+		.andExpect(jsonPath("$.price").value(product.getPrice()))
+		.andExpect(jsonPath("$.description").value(product.getDescription()))
+		.andExpect(jsonPath("$.category").value(product.getCategory()))
+		.andExpect(jsonPath("$.quantity").value(product.getQuantity()))
+		.andExpect(jsonPath("$.shippableAreaPincodes").value(product.getShippableAreaPincodes()))
 		.andDo(print());
 	}
 	
 	//updating product quantity
 	@Test
 	void shouldUpdateProductQuantity() throws Exception {
-		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
-		Product updatedProduct = new Product(1, "iphone", "apple mobile", "70000", 8, "smartphones", null);
+		Product product = new Product(1, "iphone", "apple mobile", "70000", 8, "smartphones", null);
+		productDto = new ProductDto(1, "iphone", "apple mobile", "70000", 8, "smartphones", null);
 		
-		when(productService.updateQuantity(product.getId(),updatedProduct.getQuantity())).thenReturn(updatedProduct);
+		when(dtoMapper.getProductEntity(productDto)).thenReturn(product);
+		
+		when(productService.updateQuantity(product.getId(),product.getQuantity())).thenReturn(product);
 		int productId = product.getId();
 		
 		mockMvc.perform(put("/product/{productId}/quantity",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updatedProduct))).andExpect(status().isOk())
-		.andExpect(jsonPath("$.id").value(updatedProduct.getId()))
-		.andExpect(jsonPath("$.name").value(updatedProduct.getName()))
-		.andExpect(jsonPath("$.price").value(updatedProduct.getPrice()))
-		.andExpect(jsonPath("$.description").value(updatedProduct.getDescription()))
-		.andExpect(jsonPath("$.category").value(updatedProduct.getCategory()))
-		.andExpect(jsonPath("$.quantity").value(updatedProduct.getQuantity()))
-		.andExpect(jsonPath("$.shippableAreaPincodes").value(updatedProduct.getShippableAreaPincodes()))
+				.content(objectMapper.writeValueAsString(productDto))).andExpect(status().isOk())
+		.andExpect(jsonPath("$.id").value(product.getId()))
+		.andExpect(jsonPath("$.name").value(product.getName()))
+		.andExpect(jsonPath("$.price").value(product.getPrice()))
+		.andExpect(jsonPath("$.description").value(product.getDescription()))
+		.andExpect(jsonPath("$.category").value(product.getCategory()))
+		.andExpect(jsonPath("$.quantity").value(product.getQuantity()))
+		.andExpect(jsonPath("$.shippableAreaPincodes").value(product.getShippableAreaPincodes()))
 		.andDo(print());
 	}
 	
 	//updating product category
 	@Test
 	void shouldUpdateProductCategory() throws Exception {
-		Product product = new Product(1, "iphone", "apple mobile", "70000", 6, "smartphones", null);
-		Product updatedProduct = new Product(1, "iphone", "apple mobile", "70000", 6, "iPhones & smartphones", null);
+		Product product = new Product(1, "iphones", "apple mobile", "70000", 6, "iPhones & smartphones", null);
+		productDto = new ProductDto(1, "iphone", "apple mobile", "70000", 6, "iPhones & smartphones", null);
 		
-		when(productService.updateCategory(product.getId(),updatedProduct.getCategory())).thenReturn(updatedProduct);
+		when(dtoMapper.getProductEntity(productDto)).thenReturn(product);
+		
+		when(productService.updateCategory(product.getId(),product.getCategory())).thenReturn(product);
 		int productId = product.getId();
 		
 		mockMvc.perform(put("/product/{productId}/category",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(updatedProduct))).andExpect(status().isOk())
-		.andExpect(jsonPath("$.id").value(updatedProduct.getId()))
-		.andExpect(jsonPath("$.name").value(updatedProduct.getName()))
-		.andExpect(jsonPath("$.price").value(updatedProduct.getPrice()))
-		.andExpect(jsonPath("$.description").value(updatedProduct.getDescription()))
-		.andExpect(jsonPath("$.category").value(updatedProduct.getCategory()))
-		.andExpect(jsonPath("$.quantity").value(updatedProduct.getQuantity()))
-		.andExpect(jsonPath("$.shippableAreaPincodes").value(updatedProduct.getShippableAreaPincodes()))
+				.content(objectMapper.writeValueAsString(productDto))).andExpect(status().isOk())
+		.andExpect(jsonPath("$.id").value(product.getId()))
+		.andExpect(jsonPath("$.name").value(product.getName()))
+		.andExpect(jsonPath("$.price").value(product.getPrice()))
+		.andExpect(jsonPath("$.description").value(product.getDescription()))
+		.andExpect(jsonPath("$.category").value(product.getCategory()))
+		.andExpect(jsonPath("$.quantity").value(product.getQuantity()))
+		.andExpect(jsonPath("$.shippableAreaPincodes").value(product.getShippableAreaPincodes()))
 		.andDo(print());
 	}
 	
@@ -324,11 +353,13 @@ class ProductControllerTest {
 		Area area = new Area();
 		area.setPincode(625020);
 		area.setCity("madurai");
+		AreaDto areaDto = new AreaDto(625020, "madurai");
 		
-		when(productService.addShippableArea(any(Area.class),eq(productId))).thenThrow(new ShippableAreaAlreadyExistsException("The product is already being shipped to this location"));
+		when(dtoMapper.getAreaEntity(areaDto)).thenReturn(area);
+		when(productService.addShippableArea(area,productId)).thenThrow(new ShippableAreaAlreadyExistsException("The product is already being shipped to this location"));
 		
 		mockMvc.perform(post("/product/{productId}/area",productId).contentType(MediaType.APPLICATION_JSON)
-				.content(objectMapper.writeValueAsString(area)))
+				.content(objectMapper.writeValueAsString(areaDto)))
 				.andExpect(status().isForbidden())
 				.andExpect(jsonPath("$.statusCode").value(403))
 				.andExpect(jsonPath("$.message").value("The product is already being shipped to this location"))

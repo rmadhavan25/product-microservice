@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amazonclone.productmicroservice.models.Area;
 import com.amazonclone.productmicroservice.models.DeletedOrUpdateResponse;
 import com.amazonclone.productmicroservice.models.Product;
+import com.amazonclone.productmicroservice.models.dto.AreaDto;
+import com.amazonclone.productmicroservice.models.dto.ProductDto;
+import com.amazonclone.productmicroservice.services.DTOMapper;
 import com.amazonclone.productmicroservice.services.ProductService;
 
 @RestController
@@ -23,15 +26,20 @@ public class ProductController {
 	
 	@Autowired
 	ProductService productService;
+	
+	@Autowired
+	DTOMapper dtoMapper;
 
 
 	@PostMapping("/product")
-	public Product addNewProduct(@RequestBody Product product) {
+	public Product addNewProduct(@RequestBody ProductDto productDto) {
+		Product product = dtoMapper.getProductEntity(productDto);
 		return productService.addProduct(product);
 	}
 	
 	@PostMapping("/product/{productId}/area")
-	public Product addNewShippableAddressToProduct(@PathVariable(value="productId") int productId, @RequestBody Area area) {
+	public Product addNewShippableAddressToProduct(@PathVariable(value="productId") int productId, @RequestBody AreaDto areaDto) {
+		Area area = dtoMapper.getAreaEntity(areaDto);
 		return productService.addShippableArea(area,productId);
 	}
 
@@ -51,27 +59,32 @@ public class ProductController {
 	}
 	
 	@PutMapping("/product/{productId}/name")
-	public Product updateProductName(@PathVariable(value="productId") int productId,@RequestBody Product product) {
+	public Product updateProductName(@PathVariable(value="productId") int productId,@RequestBody ProductDto productDto) {
+		Product product = dtoMapper.getProductEntity(productDto);
 		return productService.updateName(productId, product.getName());
 	}
 	
 	@PutMapping("/product/{productId}/description")
-	public Product updateProductDescription(@PathVariable(value="productId") int productId,@RequestBody Product product) {
+	public Product updateProductDescription(@PathVariable(value="productId") int productId,@RequestBody ProductDto productDto) {
+		Product product = dtoMapper.getProductEntity(productDto);
 		return productService.updateDescription(productId, product.getDescription());
 	}
 	
 	@PutMapping("/product/{productId}/price")
-	public Product updateProductPrice(@PathVariable(value="productId") int productId,@RequestBody Product product) {
+	public Product updateProductPrice(@PathVariable(value="productId") int productId,@RequestBody ProductDto productDto) {
+		Product product = dtoMapper.getProductEntity(productDto);
 		return productService.updatePrice(productId, product.getPrice());
 	}
 	
 	@PutMapping("/product/{productId}/quantity")
-	public Product updateProductQuantity(@PathVariable(value="productId") int productId,@RequestBody Product product) {
+	public Product updateProductQuantity(@PathVariable(value="productId") int productId,@RequestBody ProductDto productDto) {
+		Product product = dtoMapper.getProductEntity(productDto);
 		return productService.updateQuantity(productId, product.getQuantity());
 	}
 	
 	@PutMapping("/product/{productId}/category")
-	public Product updateProductCategory(@PathVariable(value="productId") int productId,@RequestBody Product product) {
+	public Product updateProductCategory(@PathVariable(value="productId") int productId,@RequestBody ProductDto productDto) {
+		Product product = dtoMapper.getProductEntity(productDto);
 		return productService.updateCategory(productId, product.getCategory());
 	}
 	
